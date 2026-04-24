@@ -73,10 +73,6 @@ function rollTwoDice() {
     return [rollDice(), rollDice()];
 }
 
-// =======================
-// RULES
-// =======================
-
 /**
  * Проверяет, можно ли выполнить ход: убрать числа, соответствующие броску.
  *
@@ -150,10 +146,6 @@ function nextPlayer() {
         (game.currentPlayer + 1) % game.players.length;
 }
 
-// =======================
-// WIN CHECK
-// =======================
-
 /**
  * Проверяет победу текущего игрока: все числа 1..12 убраны.
  * @returns {boolean}
@@ -162,10 +154,6 @@ function checkWin() {
     const player = game.players[game.currentPlayer];
     return player.numbers.every(n => n.removed);
 }
-
-// =======================
-// GETTERS
-// =======================
 
 /**
  * Возвращает объект состояния игры (по ссылке).
