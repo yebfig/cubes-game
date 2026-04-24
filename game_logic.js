@@ -130,7 +130,7 @@ function removeNumbers(cards) {
     player.numbers.forEach(n => {
         if (required.includes(n.value) && !n.removed) {
             n.removed = true;
-            removedNow.push(n.value); // ✅ запоминаем
+            removedNow.push(n.value); 
         }
     });
 
