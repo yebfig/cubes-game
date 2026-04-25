@@ -66,7 +66,6 @@ function startGame(count) {
 }
 
 function showWinner(winnerIndex) {
-    // stop game actions
     getGame().active = false;
 
     const bar = document.querySelector("#playersBar");
@@ -210,7 +209,7 @@ function renderTurn() {
             b1.textContent = diceValues.length === 1
                 ? `Убрать ${diceValues[0]}`
                 : `Убрать ${diceValues[0]} и ${diceValues[1]}`;
-            // allow click to show message from handleMove()
+            
             b1.onclick = () => handleMove(diceValues);
         } else if (availableDiceValues.length === 1) {
             b1.textContent = `Убрать ${availableDiceValues[0]}`;
