@@ -1,40 +1,10 @@
 
-/**
- * @typedef {Object} NumberCard
- * @property {number} value - Число от 1 до 12.
- * @property {boolean} removed - Убрано ли число игроком.
- */
-
-/**
- * @typedef {Object} Player
- * @property {NumberCard[]} numbers - Набор чисел игрока (1..12).
- */
-
-/**
- * @typedef {Object} GameState
- * @property {Player[]} players - Список игроков.
- * @property {number} currentPlayer - Индекс текущего игрока.
- * @property {boolean} active - Флаг, активна ли игра (после победы выключается).
- */
-
-/**
- * Глобальное состояние игры (на весь модуль).
- * @type {GameState}
- */
 const game = {
     players: [],
     currentPlayer: 0,
     active: false
 };
 
-
-/**
- * Инициализирует новую игру с заданным числом игроков.
- * Создаёт каждому игроку числа 1..12 (каждое встречается один раз).
- *
- * @param {number} [count=2] - Количество игроков.
- * @returns {void}
- */
 function initGame(count = 2) {
     game.players = [];
 
@@ -56,33 +26,14 @@ function initGame(count = 2) {
     game.active = true;
 }
 
-
-/**
- * Бросает один шестигранный кубик.
- * @returns {number} Значение от 1 до 6.
- */
 function rollDice() {
     return Math.floor(Math.random() * 6) + 1;
 }
 
-/**
- * Бросает два кубика.
- * @returns {[number, number]} Пара значений от 1 до 6.
- */
 function rollTwoDice() {
     return [rollDice(), rollDice()];
 }
 
-/**
- * Проверяет, можно ли выполнить ход: убрать числа, соответствующие броску.
- *
- * Правило для дублей: если на кубиках одинаковые значения, нужно (и можно) убрать только одно число.
- * Для двух разных значений: если передано два числа, достаточно чтобы существовало хотя бы одно из них.
- * Для суммы (одно число): оно должно существовать.
- *
- * @param {number[]} cards - Список значений, которые игрок пытается убрать.
- * @returns {boolean} Можно ли сделать ход в текущем состоянии игры.
- */
 function canRemoveNumbers(cards) {
     if (!game.active) return false;
     const player = game.players[game.currentPlayer];
@@ -107,13 +58,6 @@ function canRemoveNumbers(cards) {
     );
 }
 
-/**
- * Убирает подходящие числа у текущего игрока (если ход возможен).
- * Возвращает фактически убранные значения (для UI/анимаций).
- *
- * @param {number[]} cards - Запрошенные значения для удаления.
- * @returns {number[]} Список реально убранных значений (может быть пустым).
- */
 function removeNumbers(cards) {
     if (!game.active) return [];
 
@@ -137,45 +81,24 @@ function removeNumbers(cards) {
     return removedNow;
 }
 
-/**
- * Переключает ход на следующего игрока по кругу.
- * @returns {void}
- */
 function nextPlayer() {
     game.currentPlayer =
         (game.currentPlayer + 1) % game.players.length;
 }
 
-/**
- * Проверяет победу текущего игрока: все числа 1..12 убраны.
- * @returns {boolean}
- */
 function checkWin() {
     const player = game.players[game.currentPlayer];
     return player.numbers.every(n => n.removed);
 }
 
-/**
- * Возвращает объект состояния игры (по ссылке).
- * @returns {GameState}
- */
 function getGame() {
     return game;
 }
 
-/**
- * Возвращает текущего игрока (по ссылке).
- * @returns {Player}
- */
 function getCurrentPlayer() {
     return game.players[game.currentPlayer];
 }
 
-/**
- * Сбрасывает и запускает игру заново.
- * @param {number} [count=2] - Количество игроков.
- * @returns {void}
- */
 function resetGame(count = 2) {
     initGame(count);
 }

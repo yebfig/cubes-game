@@ -2,21 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     showMenu();
 });
 
-/** @type {null | [number, number]} Текущий бросок кубиков (до броска — null). */
-let dice = null;
-/** @type {boolean} Был ли уже выполнен бросок в этом ходу. */
-let rolled = false;
-/** @type {number[]} Значения, которые были реально убраны последним действием (для анимации). */
-let lastRemoved = [];
-/** @type {string} Сообщение об ошибке/подсказке в текущем ходе. */
-let message = "";
-/** @type {number} Количество игроков в текущей сессии. */
-let playerCount = 2;
-
-/**
- * Показывает стартовое меню: правила и выбор количества игроков.
- * @returns {void}
- */
 function showMenu() {
     document.body.innerHTML = "";
 
@@ -56,11 +41,6 @@ function showMenu() {
     document.body.append(title, rules, menu);
 }
 
-/**
- * Запускает новую игру и строит базовую разметку UI.
- * @param {number} count - Количество игроков (2..6).
- * @returns {void}
- */
 function startGame(count) {
     playerCount = count;
     resetGame(count);
@@ -85,11 +65,6 @@ function startGame(count) {
     render();
 }
 
-/**
- * Показывает экран победителя и отключает дальнейшие действия в игре.
- * @param {number} winnerIndex - Индекс победителя (0-based).
- * @returns {void}
- */
 function showWinner(winnerIndex) {
     // stop game actions
     getGame().active = false;
@@ -122,30 +97,18 @@ function showWinner(winnerIndex) {
     container.append(title, text, again, menu);
 }
 
-/**
- * Сбрасывает состояние текущего хода (до броска).
- * @returns {void}
- */
 function resetTurn() {
     dice = null;
     rolled = false;
     message = "";
 }
 
-/**
- * Перерисовывает весь UI текущего состояния игры.
- * @returns {void}
- */
 function render() {
     renderPlayersBar();
     renderCards();
     renderTurn();
 }
 
-/**
- * Рендерит верхнюю панель игроков: чей ход и сколько чисел осталось.
- * @returns {void}
- */
 function renderPlayersBar() {
     const bar = document.querySelector("#playersBar");
     if (!bar) return;
@@ -163,10 +126,6 @@ function renderPlayersBar() {
     });
 }
 
-/**
- * Рендерит карточки чисел текущего игрока (1..12) и состояния удаления.
- * @returns {void}
- */
 function renderCards() {
     const cards = document.querySelector("#cards");
     cards.innerHTML = "";
@@ -181,7 +140,6 @@ function renderCards() {
         if (n.removed) {
             div.classList.add("removed");
 
-            // ✅ анимация только для НОВЫХ
             if (lastRemoved.includes(n.value)) {
                 div.classList.add("animate-remove");
             }
@@ -191,10 +149,6 @@ function renderCards() {
     });
 }
 
-/**
- * Рендерит интерфейс хода: бросок кубиков, доступные действия и сообщения.
- * @returns {void}
- */
 function renderTurn() {
     const container = document.querySelector("#container");
     animateContainerUpdate(container, () => {
@@ -282,14 +236,6 @@ function renderTurn() {
     });
 }
 
-/**
- * Делает «плавную» смену содержимого контейнера хода: сначала прячет старые кнопки,
- * затем обновляет DOM и анимирует высоту панели, чтобы избежать скачков.
- *
- * @param {HTMLElement | null} container - Контейнер хода (`#container`).
- * @param {() => void} updateFn - Функция, которая обновляет содержимое контейнера.
- * @returns {void}
- */
 function animateContainerUpdate(container, updateFn) {
     if (!container) return;
 
@@ -334,13 +280,6 @@ function animateContainerUpdate(container, updateFn) {
     }
 }
 
-/**
- * Применяет ход: пытается убрать числа у текущего игрока и обновляет UI/состояние.
- * Если ход невозможен — показывает сообщение. Если игрок победил — показывает экран победы.
- *
- * @param {number[]} cards - Числа, которые нужно попытаться убрать (одно — сумма, или одно/два — кубики).
- * @returns {void}
- */
 function handleMove(cards) {
     const removed = removeNumbers(cards);
 
