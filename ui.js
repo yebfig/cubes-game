@@ -196,9 +196,12 @@ function renderTurn() {
         container.appendChild(diceInfo);
 
         const b1 = document.createElement("button");
+
         const d1 = dice[0];
         const d2 = dice[1];
+
         const diceValues = (d1 === d2) ? [d1] : [d1, d2];
+        
         const availableDiceValues = diceValues.filter(v =>
             player.numbers.some(n => n.value === v && !n.removed)
         );
