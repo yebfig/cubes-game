@@ -38,15 +38,11 @@ function canRemoveNumbers(cards) {
     if (!game.active) return false;
     const player = game.players[game.currentPlayer];
 
-    // numbers 1..12 exist only once per player;
-    // treat duplicates in cards as a single requirement.
     const required = [];
     for (const v of cards) {
         if (!required.includes(v)) required.push(v);
     }
 
-    // If one number was provided (sum move), it must exist.
-    // If two numbers were provided (dice move), at least one must exist.
     if (required.length <= 1) {
         return required.every(v =>
             player.numbers.some(n => n.value === v && !n.removed)

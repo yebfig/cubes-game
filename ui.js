@@ -201,7 +201,7 @@ function renderTurn() {
         const d2 = dice[1];
 
         const diceValues = (d1 === d2) ? [d1] : [d1, d2];
-        
+
         const availableDiceValues = diceValues.filter(v =>
             player.numbers.some(n => n.value === v && !n.removed)
         );
@@ -248,7 +248,6 @@ function animateContainerUpdate(container, updateFn) {
         oldActions.classList.add("exit");
     }
 
-    // Lock current height so we can animate to new one.
     const startHeight = container.offsetHeight;
     container.style.height = startHeight + "px";
     container.style.overflow = "hidden";
@@ -256,16 +255,13 @@ function animateContainerUpdate(container, updateFn) {
     const doUpdate = () => {
         updateFn();
 
-        // Next frame: animate to the new height.
         requestAnimationFrame(() => {
             const endHeight = container.scrollHeight;
-            // Do not shrink the panel: keep at least the previous height.
             const targetHeight = Math.max(startHeight, endHeight);
             container.style.height = targetHeight + "px";
 
             const onEnd = (e) => {
                 if (e.propertyName !== "height") return;
-                // Keep fixed height so it doesn't shrink next renders.
                 container.style.height = targetHeight + "px";
                 container.style.overflow = "";
                 container.removeEventListener("transitionend", onEnd);
@@ -275,7 +271,6 @@ function animateContainerUpdate(container, updateFn) {
         });
     };
 
-    // If we had buttons, let them fade out first.
     if (oldActions) {
         setTimeout(doUpdate, 160);
     } else {
