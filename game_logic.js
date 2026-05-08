@@ -1,100 +1,120 @@
 
-const game = {
-    players: [],
-    currentPlayer: 0,
-    active: false
-};
+const GAME_RULES = Object.freeze({
+    defaultPlayers: 2,
+    minPlayers: 2,
+    maxPlayers: 6,
+    minNumber: 1,
+    maxNumber: 12,
+    diceCount: 2,
+    diceSides: 6
+});
 
-function initGame(count = 2) {
-    game.players = [];
+function normalizePlayerCount(count) {
+    const parsed = Number.parseInt(count, 10);
+    if (Number.isNaN(parsed)) return GAME_RULES.defaultPlayers;
+    return Math.min(GAME_RULES.maxPlayers, Math.max(GAME_RULES.minPlayers, parsed));
+}
 
-    for (let i = 0; i < count; i++) {
-        const numbers = [];
-        for (let n = 1; n <= 12; n++) {
-            numbers.push({
-                value: n,
-                removed: false
-            });
+function createPlayerNumbers() {
+    const numbers = [];
+    for (let value = GAME_RULES.minNumber; value <= GAME_RULES.maxNumber; value += 1) {
+        numbers.push({ value, removed: false });
+    }
+    return numbers;
+}
+
+function createGameEngine() {
+    const state = {
+        players: [],
+        currentPlayer: 0,
+        active: false
+    };
+
+    function reset(playerCount = GAME_RULES.defaultPlayers) {
+        const normalizedCount = normalizePlayerCount(playerCount);
+        state.players = Array.from({ length: normalizedCount }, () => ({
+            numbers: createPlayerNumbers()
+        }));
+        state.currentPlayer = 0;
+        state.active = true;
+        return getState();
+    }
+
+    function rollDie() {
+        return Math.floor(Math.random() * GAME_RULES.diceSides) + 1;
+    }
+
+    function rollDice() {
+        if (!state.active) return [];
+        return Array.from({ length: GAME_RULES.diceCount }, () => rollDie());
+    }
+
+    function getCurrentPlayer() {
+        return state.players[state.currentPlayer];
+    }
+
+    function hasValue(value) {
+        const player = getCurrentPlayer();
+        return player.numbers.some((number) => number.value === value && !number.removed);
+    }
+
+    function canRemove(values) {
+        if (!state.active || !Array.isArray(values) || values.length === 0) return false;
+        return values.every((value) => hasValue(value));
+    }
+
+    function remove(values) {
+        if (!canRemove(values)) return [];
+        const player = getCurrentPlayer();
+        const uniqueValues = [...new Set(values)];
+        const removedNow = [];
+
+        for (const number of player.numbers) {
+            if (uniqueValues.includes(number.value) && !number.removed) {
+                number.removed = true;
+                removedNow.push(number.value);
+            }
         }
 
-        game.players.push({
-            numbers
-        });
+        return removedNow;
     }
 
-    game.currentPlayer = 0;
-    game.active = true;
-}
-
-function rollDice() {
-    return Math.floor(Math.random() * 6) + 1;
-}
-
-function rollTwoDice() {
-    return [rollDice(), rollDice()];
-}
-
-function canRemoveNumbers(cards) {
-    if (!game.active) return false;
-    const player = game.players[game.currentPlayer];
-
-    const required = [];
-    for (const v of cards) {
-        if (!required.includes(v)) required.push(v);
+    function getRemainingCount(playerIndex = state.currentPlayer) {
+        const player = state.players[playerIndex];
+        if (!player) return 0;
+        return player.numbers.filter((number) => !number.removed).length;
     }
 
-    if (required.length <= 1) {
-        return required.every(v =>
-            player.numbers.some(n => n.value === v && !n.removed)
-        );
+    function isCurrentPlayerWinner() {
+        return getRemainingCount(state.currentPlayer) === 0;
     }
 
-    return required.some(v =>
-        player.numbers.some(n => n.value === v && !n.removed)
-    );
-}
-
-function removeNumbers(cards) {
-    if (!game.active) return [];
-
-    const player = game.players[game.currentPlayer];
-
-    if (!canRemoveNumbers(cards)) return [];
-
-    const required = [];
-    for (const v of cards) {
-        if (!required.includes(v)) required.push(v);
+    function nextPlayer() {
+        state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
     }
-    let removedNow = [];
 
-    player.numbers.forEach(n => {
-        if (required.includes(n.value) && !n.removed) {
-            n.removed = true;
-            removedNow.push(n.value); 
-        }
-    });
+    function stop() {
+        state.active = false;
+    }
 
-    return removedNow;
+    function getState() {
+        return state;
+    }
+
+    return {
+        rules: GAME_RULES,
+        reset,
+        rollDice,
+        canRemove,
+        remove,
+        nextPlayer,
+        stop,
+        getState,
+        getCurrentPlayer,
+        getRemainingCount,
+        isCurrentPlayerWinner,
+        normalizePlayerCount
+    };
 }
 
-function nextPlayer() {
-    game.currentPlayer =
-        (game.currentPlayer + 1) % game.players.length;
-}
-
-function checkWin() {
-    const player = game.players[game.currentPlayer];
-    return player.numbers.every(n => n.removed);
-}
-
-function getGame() {
-    return game;
-}
-
-function getCurrentPlayer() {
-    return game.players[game.currentPlayer];
-}
-
-function resetGame(count = 2) {
-    initGame(count);
-}
+window.CubesGame = createGameEngine();

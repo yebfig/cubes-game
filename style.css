@@ -22,7 +22,7 @@ body {
 
     background: linear-gradient(180deg, #f4f5f7, #e6e8ee);
     padding: 20px;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 /* =======================
@@ -259,22 +259,35 @@ button:hover {
 }
 
 /* бросить 2 кубика */
-button:nth-of-type(1) {
+.actions button:nth-of-type(1) {
     background: #111;
     color: #fff;
 }
 
 /* сумма */
-button:nth-of-type(2) {
+.actions button:nth-of-type(2) {
     background: #e5e7eb;
     color: #111;
     border: 1px solid rgba(0,0,0,0.12);
 }
 
 /* пропуск */
-button:nth-of-type(3) {
+.actions button:nth-of-type(3) {
     background: #c1121f;
     color: #fff;
+}
+
+button:disabled,
+button.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+button:disabled:hover,
+button.disabled:hover {
+    transform: none;
 }
 
 /* =======================
@@ -312,6 +325,11 @@ button:nth-of-type(3) {
     align-items: center;
 }
 
+#menu button {
+    background: #111;
+    color: #fff;
+}
+
 #menu, .rules {
     width: 100%;
     max-width: 520px;
@@ -344,6 +362,8 @@ button:nth-of-type(3) {
     width: 60px;
     padding: 5px;
     border-radius: 6px;
+    border: 1px solid #cfd5df;
+    text-align: center;
 }
 
 .card {
